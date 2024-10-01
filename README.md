@@ -21,60 +21,35 @@ Players must maintain their character persona while interacting with AI-generate
 3. **Round 2 (Voting)**: Players and AI vote on who they suspect is the human. AI votes based on reasoning provided by the language models.
 4. **Results**: The game master counts the votes, and the player with the most votes loses (if they were suspected of being human).
 
+### Setup
+
+1. **Run Server on LM Studuio**:
+   The game uses a local Large Language Model (LLM). Ensure you have the model running locally at `localhost:1234`.
+   You can adjust this in the code by modifying the `client` initialization. The code here uses the Server function provided in LM Studio.
+
 ## Installation
 
 To set up and run the game locally, follow these steps:
 
-### Prerequisites
+1. **Download the WhoIsTheHuman.py file**
+2. Open the directory the game is downloaded to and type **cmd** in the directory field to open the comandline in this folder.
+3. Install the required software:**
 
-- **Python 3.8+**
-- **PyTorch** (with CUDA if available)
-- **FFmpeg** (for audio processing)
-- Install the following libraries using `pip`:
-  
-  ```bash
-  pip install whisper pyaudio webrtcvad pydub fuzzywuzzy torch openai tts
-  ```
-
-### Steps
-
-1. **Clone the Repository**:
-   
    ```bash
-   git clone https://github.com/yourusername/WhoIsTheHuman.git
-   cd WhoIsTheHuman
+   pip install openai-whisper pyaudio webrtcvad pydub fuzzywuzzy torch openai tts
    ```
-
-2. **Set Up OpenAI Model**:
-   The game uses a local Large Language Model (LLM). Ensure you have the model running locally at `localhost:1234`. You can adjust this in the code by modifying the `client` initialization. The code here uses the Server function provided in LM Studio and Meta's Llama 3.1 Instruct 7B model which works well with the prompt engeneering used.
-
-   Example:
-   ```python
-   client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
-   ```
-
-3. **Prepare Audio Devices**:
-   Ensure your microphone is properly connected and configured for use with PyAudio. FFmpeg is required for processing the audio files.
-
-4. **Install Text-to-Speech (TTS) Models**:
-   The game uses multiple TTS models, such as:
-   - **Thorsten** (German, for Einstein)
-   - **Jenny** (English, for Cleopatra)
-   - **Male English voice** (for Genghis Khan)
    
-   These are initialized in the code and loaded dynamically depending on the role.
-
-5. **Run the Game**:
+4. **Run the Game**:
 
    Start the game with the following command:
    
    ```bash
-   python game.py
-   ```
+   python WhoIsTheHuman.py
+   ```  
 
 ## How to Play
 
-1. **Launch the game**.
+1. **Launch the game** and wait for the Ai's to introduce themself.
 2. **Follow on-screen instructions** to introduce yourself in character.
 3. **Interact via voice**: Your microphone will be used to detect your responses.
 4. **Vote on the human** in the second round.
@@ -85,14 +60,12 @@ To set up and run the game locally, follow these steps:
 - **Whisper**: For speech-to-text transcription.
 - **WebRTC VAD**: For detecting voice activity in real-time.
 - **PyAudio**: For capturing audio from the microphone.
-- **FuzzyWuzzy**: For approximate string matching (used to match player names).
+- **FuzzyWuzzy**: For approximate string matching (used to find and match the role you voted for since speach recognition not always translates the name correctly).
 - **Text-to-Speech**: The game uses the `TTS` library for different character voices.
 - **OpenAI**: Used for generating responses from the game master and AI characters.
 
 ## Troubleshooting
 
-- Ensure your microphone is connected and recognized by PyAudio.
-- If text-to-speech doesn’t work, verify that the TTS models are installed correctly.
 - For local LLM issues, ensure that the server is up and running at the correct URL.
 
 ## Contributing
