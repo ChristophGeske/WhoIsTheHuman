@@ -33,7 +33,7 @@ To set up and run the game locally, follow these steps:
 - Install the following libraries using `pip`:
   
   ```bash
-  pip install whisper pyaudio webrtcvad pydub fuzzywuzzy torch openai tts
+  pip install openai-whisper pyaudio webrtcvad pydub fuzzywuzzy torch openai tts
   ```
 
 ### Setup
