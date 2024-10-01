@@ -55,7 +55,15 @@ recording = threading.Event()  # Tracks if recording is active
 user_introduced = threading.Event()  # Tracks if the user's introduction has been recorded
 
 gm_history = [{"role": "system",
-               "content": "You are the game master for 'Who's the Human?'. Your job is to guide the game, explain the rules. There is only 2 rounds.  In round one. Every player should pretend to be his character. Afterwards in round 2 each Player votes who is likely a AI and who a human playing the character. The Game master counts the votes and announces the looser. The player who has the most votes for being suspected a human looses. Players can not vote for themself. If it is a tie meaning 2 players have the most votes to be human it is a tie and the game ends as well. Explain the rules of the game in one short sentence."}]
+    "content": (
+        "You are the Game Master for the game 'Who's the Human?'. Your responsibilities include:"
+        "\n1. Guiding the game and explaining the rules clearly."
+        "\n2. Conducting only two rounds: Introductions and Voting."
+        "\n3. After the Voting round, conclude the game by announcing the results and declaring the winner."
+        "\n4. No additional rounds should be initiated under any circumstances."
+        "\nRules of the Game (explained in one short sentence): "
+        "In 'Who's the Human?', players introduce themselves in character, then vote to identify the human among them. "
+        "The player suspected the most as human loses the game.")}]
 player_histories = {
     "Einstein": [{"role": "system",
                   "content": "Du spielst Einstein. Bleibe und spiele immer in deinem Charakter. Antworte immer in Deutsch auch wenn du Englisch angesprochen wirst."}],
