@@ -27,7 +27,7 @@ To set up and run the game locally, follow these steps:
 
 ### Prerequisites
 
-- **Python 3.8+**
+- **Python 3.10**
 - **PyTorch** (with CUDA if available)
 - **FFmpeg** (for audio processing)
 - Install the following libraries using `pip`:
