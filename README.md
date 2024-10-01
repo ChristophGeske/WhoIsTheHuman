@@ -46,7 +46,7 @@ To set up and run the game locally, follow these steps:
    ```
 
 2. **Set Up OpenAI Model**:
-   The game uses a local Large Language Model (LLM). Ensure you have the model running locally at `localhost:1234`. You can adjust this in the code by modifying the `client` initialization.
+   The game uses a local Large Language Model (LLM). Ensure you have the model running locally at `localhost:1234`. You can adjust this in the code by modifying the `client` initialization. The code here uses the Server function provided in LM Studio and Meta's Llama 3.1 Instruct 7B model which works well with the prompt engeneering used.
 
    Example:
    ```python
