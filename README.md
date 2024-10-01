@@ -21,34 +21,31 @@ Players must maintain their character persona while interacting with AI-generate
 3. **Round 2 (Voting)**: Players and AI vote on who they suspect is the human. AI votes based on reasoning provided by the language models.
 4. **Results**: The game master counts the votes, and the player with the most votes loses (if they were suspected of being human).
 
-## Installation
-
-To set up and run the game locally, follow these steps:
-
-### Prerequisites
-
-- **Python 3.10**
-- **PyTorch** (with CUDA if available)
-- **FFmpeg** (for audio processing)
-- Install the following libraries using `pip`:
-  
-  ```bash
-  pip install openai-whisper pyaudio webrtcvad pydub fuzzywuzzy torch openai tts
-  ```
-
 ### Setup
 
 1. **Run Server on LM Studuio**:
    The game uses a local Large Language Model (LLM). Ensure you have the model running locally at `localhost:1234`.
    You can adjust this in the code by modifying the `client` initialization. The code here uses the Server function provided in LM Studio.
 
-2. **Run the Game**:
+## Installation
+
+To set up and run the game locally, follow these steps:
+
+1. **Download the WhoIsTheHuman.py file**
+2. Open the directory the game is downloaded to and type **cmd** in the directory field to open the comandline in this folder.
+3. Install the required software:**
+
+   ```bash
+   pip install openai-whisper pyaudio webrtcvad pydub fuzzywuzzy torch openai tts
+   ```
+   
+4. **Run the Game**:
 
    Start the game with the following command:
    
    ```bash
-   python game.py
-   ```
+   python WhoIsTheHuman.py
+   ```  
 
 ## How to Play
 
