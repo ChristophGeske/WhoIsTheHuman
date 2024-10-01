@@ -1,6 +1,4 @@
-Here’s the README formatted for GitHub, with appropriate Markdown syntax:
 
-```markdown
 # WhoIsTheHuman
 
 **WhoIsTheHuman** is an AI-powered game that challenges players to disguise themselves as AI characters while trying to figure out who among them is the real human. The game uses AI models for character roleplay and voting, voice recognition for player input, and text-to-speech (TTS) for character responses.
@@ -104,4 +102,4 @@ Feel free to fork this repository and submit pull requests if you'd like to cont
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
+
