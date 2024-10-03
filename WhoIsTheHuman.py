@@ -1,5 +1,5 @@
-# Ich denke das Zählen geht nicht mehr richtif und es könnte sein das sie nach dem ende wetiter reden das mal testen.
 import random
+import warnings
 import wave
 import webrtcvad
 import whisper
@@ -8,18 +8,27 @@ import threading
 from openai import OpenAI
 import torch
 from fuzzywuzzy import fuzz  # Add fuzzy matching
-
-
 from pydub import AudioSegment
 from pydub.playback import play
 from pydub.effects import speedup
 import os
-
 from TTS.api import TTS
 import re
 
+# Suppress specific warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='fuzzywuzzy')
+warnings.filterwarnings("ignore", category=FutureWarning, module='TTS')
+warnings.filterwarnings("ignore", category=UserWarning, module='whisper')
+warnings.filterwarnings("ignore", category=FutureWarning, module='whisper')
+
+# Suppress PyTorch warnings
+os.environ['TORCH_CPP_LOG_LEVEL'] = 'ERROR'
+
+# Suppress TensorFlow warnings (if applicable)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 # Initialize TTS models
-# TODO These models sound good but they suffer from halizunations and a differnt TTS system would be needed.
+# TODO These models sound good but they suffer from halizunations and a differnt TTS system should be used since tts is no longer developed.
 try:
     thorsten_model = TTS("tts_models/de/thorsten/tacotron2-DDC")
     jenny_model = TTS("tts_models/en/jenny/jenny")
@@ -93,9 +102,44 @@ def match_name(input_text, valid_names, threshold=60):
     return None
 
 
+def extract_vote_from_response(response, valid_names):
+    """
+    Extract a vote from an AI response using the same fuzzy matching as for user votes.
+    Returns the matched name or None if no valid match is found.
+    """
+    # Common vote patterns in responses
+    patterns = [
+        r"I think (?:the human is|it is) ([A-Za-z\s]+)",  # English pattern
+        r"Ich denke (?:der Mensch ist|es ist) ([A-Za-z\s]+)",  # German pattern
+        r"vote for ([A-Za-z\s]+)",
+        r"([A-Za-z\s]+) must be the human",
+        r"<([^>]+)/>",  # Bracket format
+    ]
+
+    # Try each pattern
+    for pattern in patterns:
+        match = re.search(pattern, response, re.IGNORECASE)
+        if match:
+            vote = match.group(1).strip()
+            # Use the same fuzzy matching as used for user votes
+            matched_name = match_name(vote, valid_names)
+            if matched_name:
+                return matched_name
+
+    # If no pattern matches, try fuzzy matching on the whole response
+    # This is a fallback for cases where the AI response doesn't follow expected patterns
+    for name in valid_names:
+        if name.lower() in response.lower():
+            return name
+
+    return None
+
 # Load the Whisper model for speech-to-text, and set up GPU/CPU usage
 whisper_model = whisper.load_model("base")  # Removed weights_only=True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # Move model to GPU if available, otherwise use CPU
+
+print(f"Is CUDA available? {torch.cuda.is_available()}")
+print(f"Using device: {device}")
 whisper_model = whisper_model.to(device)  # Assign the model to the appropriate device
 
 
@@ -288,31 +332,39 @@ def main():
     introductions = "\n".join([f"{role}: {player_histories[role][-1]['content']}" for role in roles])
     print(f"Introductions: {introductions}")
 
-
     for role in roles:
         if role == user_role:
-            record_audio(valid_names, votes)  # Name validation in the second round
+            print(f"\nYour turn to vote, {role}! Please say the name of who you think is the human player.")
+            record_audio(valid_names, votes)
         else:
             if role == "Einstein":
-                voting_prompt = f"""Du bist {role}, spielst als {role} im Spiel 'Who's the Human?'. Hier sind 
-                alle Einführungen der Spieler: {introductions} Basierend auf diesen Einführungen, wer denkst du 
-                ist der menschliche Spieler? Beginne deine Antwort mit 'Ich denke der Mensch ist' gefolgt vom Namen 
-                der Figur, die du für den Menschen hältst, und einer kurzen Erklärung. Stimme nicht für dich selbst ab! 
-                Du bist {role}."""
+                voting_prompt = f"""Du bist {role}. Hier sind die Einführungen: {introductions}
+                    WICHTIG: Du MUSST deine Antwort in diesem Format geben:
+                    'Ich denke der Mensch ist [Name]' - zum Beispiel 'Ich denke der Mensch ist Cleopatra'
+                    Danach erkläre kurz warum. Stimme nicht für dich selbst ab!"""
             else:
-                voting_prompt = f"""You are {role}, playing as {role} in the 'Who's the Human?' game. Here are all 
-                the players' introductions: {introductions} Based on these introductions, who do you think is the 
-                human player? Start your response with 'I think the human is' followed by the name of the character 
-                you think is the human, and a brief one-sentence explanation. Do not vote for yourself! You are {role}."""
+                voting_prompt = f"""You are {role}. Here are the introductions: {introductions}
+                    IMPORTANT: You MUST give your answer in this format:
+                    'I think the human is [Name]' - for example 'I think the human is Cleopatra'
+                    Then briefly explain why. Do not vote for yourself!"""
+
             player_histories[role].append({"role": "user", "content": voting_prompt})
             response = get_response(player_histories[role])
-            print(f"{role} (AI) votes: {response}")
-            speak(response, role)  # TTS for AI responses
+            print(f"\n{role} (AI) says: {response}")
+            speak(response, role)
 
-            matched_name = match_name(response, roles)
-            print(f"AI {role} voted for: {matched_name}")
-            if matched_name and matched_name != role:
-                votes[matched_name] += 1
+            # Process AI vote using the same fuzzy matching logic as user votes
+            voted_for = extract_vote_from_response(response, [r for r in roles if r != role])
+            if voted_for:
+                votes[voted_for] += 1
+                print(f"Vote recorded: {role} voted for {voted_for}")
+            else:
+                print(f"Warning: Could not detect a valid vote from {role}")
+
+    # Print final vote tally
+    print("\nFinal Vote Count:")
+    for role, vote_count in votes.items():
+        print(f"{role}: {vote_count} votes")
 
     max_votes = max(votes.values())
     most_voted = [role for role, count in votes.items() if count == max_votes and list(votes.values()).count(max_votes) == 1]
@@ -326,6 +378,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
