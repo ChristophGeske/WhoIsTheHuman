@@ -5,6 +5,10 @@
 
 Players must maintain their character persona while interacting with AI-generated characters like Einstein, Genghis Khan, and Cleopatra. At the end of each round, all players (including AI) vote on who they think is the human, and the player suspected the most loses.
 
+## Prerequisits
+
+For acceptable performance this app requires a Nvidia GPU to run the LLM and the app. CPU works but is much much slower.
+
 ## Features
 
 - **Voice Recognition**: Players use voice commands to participate in the game.
@@ -67,6 +71,19 @@ To set up and run the game locally, follow these steps:
 ## Troubleshooting
 
 - For local LLM issues, ensure that the server is up and running at the correct URL.
+- If the app runs slow and the output of the logging line is "Is CUDA available? False" then you are running on cpu only. 
+  When you have a GPU and it is still slow it might be that you are missing some important NVIDIA installs. Try the following commands to do a fresh install:
+
+   ```bash
+   pip uninstall torch torchvision torchaudio
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+   ```  
+  Now you should see the following output:
+
+  ```bash
+  Is CUDA available? True
+  Using device: cuda:0
+  ```  
 
 ## Contributing
 
