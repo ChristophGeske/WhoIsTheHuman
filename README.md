@@ -71,7 +71,11 @@ To set up and run the game locally, follow these steps:
 ## Troubleshooting
 
 - For local LLM issues, ensure that the server is up and running at the correct URL.
-- If the app runs slow and the output of the logging line is "Is CUDA available? False" then you are running on cpu only. 
+- If the app runs slow and the output of the logging line is
+  ```bash
+   Is CUDA available? False
+   ```
+  then it seems you are running on cpu only mode. 
   When you have a GPU and it is still slow it might be that you are missing some important NVIDIA installs. Try the following commands to do a fresh install:
 
    ```bash
